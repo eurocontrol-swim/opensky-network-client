@@ -1,0 +1,7 @@
+name: opensky-network-manager
+dependencies:
+  - python
+  - pytest
+  - pytest-cov
+  - pip:
+      - requests
