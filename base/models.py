@@ -28,7 +28,9 @@ http://opensource.org/licenses/BSD-3-Clause
 Details on EUROCONTROL: http://www.eurocontrol.int
 """
 from __future__ import annotations
-from typing import Dict, Any
+from typing import Any
+
+from base.typing import JsonSerializable
 
 __author__ = "EUROCONTROL (SWIM)"
 
@@ -37,14 +39,14 @@ class BaseModel:
     """
     Base class interface to be inherited from classes representing incoming and outbound data upon a Request/Response.
     """
-    def __eq__(self, other: BaseModel) -> bool:
+    def __eq__(self, other: Any) -> bool:
         return isinstance(other, self.__class__) and other.__dict__ == self.__dict__
 
-    def __ne__(self, other: BaseModel) -> bool:
+    def __ne__(self, other: Any) -> bool:
         return not other == self
 
     @classmethod
-    def from_dict(self, object_dict: Dict[str, Any]) -> BaseModel:
+    def deserialize(self, object_dict: JsonSerializable) -> BaseModel:
         """
         Will be used upon deserialization of the incoming data
 
@@ -52,7 +54,7 @@ class BaseModel:
         """
         raise NotImplementedError()
 
-    def to_dict(self) -> Dict[str, Any]:
+    def serialize(self) -> JsonSerializable:
         """
         Will be used upon serialization of the outbound data
         """

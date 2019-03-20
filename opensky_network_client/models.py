@@ -27,18 +27,18 @@ http://opensource.org/licenses/BSD-3-Clause
 
 Details on EUROCONTROL: http://www.eurocontrol.int
 """
+from __future__ import annotations
 import enum
 from datetime import datetime
+from typing import Optional, List, TypeVar, Dict
+
+from base import BaseModel
 
 __author__ = "EUROCONTROL (SWIM)"
 
 
-class Comparable:
-    def __eq__(self, other):
-        return isinstance(other, self.__class__) and other.__dict__ == self.__dict__
-
-    def __ne__(self, other):
-        return not other == self
+StateVectorData = TypeVar('StateVectorData', str, bool, int, float)
+FlightConnectionData = TypeVar('FlightConnectionData', str, int)
 
 
 class PositionSource(enum.Enum):
@@ -48,51 +48,49 @@ class PositionSource(enum.Enum):
     FLARM = 3
 
 
-class StateVector(Comparable):
+class StateVector(BaseModel):
 
-    def __init__(self, icao24, callsign, origin_country, time_position_in_sec, last_contact_in_sec, longitude, latitude,
-                 baro_altitude_in_m, on_ground, velocity_in_mi_per_sec, heading, vertical_rate_in_m_per_s, sensors,
-                 geo_altitude_in_m, squawk, spi, position_source):
+    def __init__(self,
+                 icao24: str,
+                 callsign: Optional[str],
+                 origin_country: str,
+                 time_position_in_sec: Optional[int],
+                 last_contact_in_sec: int,
+                 longitude: Optional[float],
+                 latitude: Optional[float],
+                 baro_altitude_in_m: Optional[float],
+                 on_ground: bool,
+                 velocity_in_mi_per_sec: Optional[float],
+                 heading: Optional[float],
+                 vertical_rate_in_m_per_s: Optional[float],
+                 sensors: Optional[str],
+                 geo_altitude_in_m: Optional[float],
+                 squawk: Optional[str],
+                 spi: bool,
+                 position_source: PositionSource) -> None:
         """
         Represents the state of a vehicle at a particular time
 
         :param icao24: ICAO24 address of the transmitter in hex string representation.
-        :type icao24: str
         :param callsign: callsign of the vehicle. Can be None if no callsign has been received.
-        :type callsign: str or None
         :param origin_country: inferred through the ICAO24 address
-        :type origin_country: str
         :param time_position_in_sec: seconds since epoch of last position report. Can be None if there was no position
                                      report received by OpenSky within 15s before.
-        :type time_position_in_sec: int or None
         :param last_contact_in_sec: seconds since epoch of last received message from this transponder
-        :type last_contact_in_sec: int
         :param longitude: in ellipsoidal coordinates (WGS-84) and degrees. Can be None
-        :type longitude: float or None
         :param latitude: in ellipsoidal coordinates (WGS-84) and degrees. Can be None
-        :type latitude: float or None
         :param baro_altitude_in_m: barometric altitude in meters. Can be None
-        :type baro_altitude_in_m: float or None
         :param on_ground: true if aircraft is on ground (sends ADS-B surface position reports).
-        :type on_ground: bool
         :param velocity_in_mi_per_sec: over ground in m/s. Can be None if information not present
-        :type velocity_in_mi_per_sec: float or None
         :param heading: in decimal degrees (0 is north). Can be None if information not present.
-        :type heading: float or None
         :param vertical_rate_in_m_per_s: in m/s, incline is positive, decline negative. Can be None if information not
                                          present.
-        :type vertical_rate_in_m_per_s: float or None
         :param sensors: serial numbers of sensors which received messages from the vehicle within the validity period of
                         this state vector. Can be None if no filtering for sensor has been requested.
-        :type sensors: str or None
         :param geo_altitude_in_m: geometric altitude in meters. Can be None
-        :type geo_altitude_in_m: float or None
         :param squawk: transponder code aka Squawk. Can be None
-        :type squawk: str or None
         :param spi: special purpose indicator
-        :type spi: bool
         :param position_source: origin of this state's position: 0 = ADS-B, 1 = ASTERIX, 2 = MLAT, 3 = FLARM
-        :type position_source: PositionSource
         """
         self.icao24 = icao24,
         self.callsign = callsign,
@@ -113,25 +111,21 @@ class StateVector(Comparable):
         self.position_source = position_source
 
     @classmethod
-    def from_list(cls, state_vector_list):
+    def from_list(cls, state_vector_list: List[StateVectorData]) -> StateVector:
         """
         :param state_vector_list:
-        :type state_vector_list: list
         :return:
-        :rtype: StateVector
         """
         return cls(*state_vector_list)
 
 
-class States(Comparable):
+class States(BaseModel):
 
-    def __init__(self, time_in_sec, states):
+    def __init__(self, time_in_sec: int, states: List[List[StateVector]]) -> None:
         """
         Represents the state of the airspace as seen by OpenSky at a particular time.
         :param time_in_sec: time since Unix epoch
-        :type time_in_sec: int
         :param states:
-        :type states:
         """
         self.time_in_sec = time_in_sec
         self.states = states
@@ -139,7 +133,7 @@ class States(Comparable):
         self.time = datetime.fromtimestamp(time_in_sec)
 
     @classmethod
-    def from_dict(cls, states_dict):
+    def deserialize(cls, states_dict: Dict[str, StateVectorData]) -> States:
         return cls(
             time_in_sec=states_dict['time'],
             states=[StateVector.from_list(state_vector_list) for state_vector_list in states_dict['states']]
@@ -147,49 +141,46 @@ class States(Comparable):
         )
 
 
-class FlightConnection(Comparable):
+class FlightConnection(BaseModel):
 
-    def __init__(self, icao24, first_seen, est_departure_airport, last_seen, est_arrival_airport, callsign,
-                 est_departure_airport_horiz_distance, est_departure_airport_vert_distance,
-                 est_arrival_airport_horiz_distance, est_arrival_airport_vert_distance,
-                 departure_airport_candidates_count, arrival_airport_candidates_count):
+    def __init__(self,
+                 icao24: str,
+                 first_seen: int,
+                 est_departure_airport: Optional[str],
+                 last_seen: int,
+                 est_arrival_airport: Optional[str],
+                 callsign: Optional[str],
+                 est_departure_airport_horiz_distance: Optional[int],
+                 est_departure_airport_vert_distance: Optional[int],
+                 est_arrival_airport_horiz_distance: int,
+                 est_arrival_airport_vert_distance: int,
+                 departure_airport_candidates_count: int,
+                 arrival_airport_candidates_count: int) -> None:
         """
         Represents a flight departure or arrival for a certain airport.
 
         :param icao24: Unique ICAO 24-bit address of the transponder in hex string representation. All letters are lower
                        case.
-        :type icao24: str
         :param first_seen: Estimated time of departure for the flight as Unix time (seconds since epoch).
-        :type first_seen: int
         :param est_departure_airport: ICAO code of the estimated departure airport. Can be null if the airport could not
                                       be identified.
-        :type est_departure_airport: str or None
         :param last_seen: Estimated time of arrival for the flight as Unix time (seconds since epoch)
-        :type last_seen: int
         :param est_arrival_airport: ICAO code of the estimated arrival airport. Can be null if the airport could not be
                                     identified.
-        :type est_arrival_airport: str or None
         :param callsign: Callsign of the vehicle (8 chars). Can be null if no callsign has been received. If the vehicle
                          transmits multiple callsigns during the flight, we take the one seen most frequently
-        :type callsign: str or None
         :param est_departure_airport_horiz_distance: Horizontal distance of the last received airborne position to the
                                                      estimated departure airport in meters
-        :type est_departure_airport_horiz_distance: int or None
         :param est_departure_airport_vert_distance: Vertical distance of the last received airborne position to the
                                                     estimated departure airport in meters
-        :type est_departure_airport_vert_distance: int or None
         :param est_arrival_airport_horiz_distance: Horizontal distance of the last received airborne position to the
                                                    estimated arrival airport in meters
-        :type est_arrival_airport_horiz_distance: int
         :param est_arrival_airport_vert_distance: Vertical distance of the last received airborne position to the
                                                   estimated arrival airport in meters
-        :type est_arrival_airport_vert_distance: int
         :param departure_airport_candidates_count: Number of other possible departure airports. These are airports in
                                                    short distance to estDepartureAirport.
-        :type departure_airport_candidates_count: int
-        :param arrival_airport_candidates_count: Number of other possible departure airports. These are airports in short
-                                                 distance to estArrivalAirport.
-        :type arrival_airport_candidates_count: int
+        :param arrival_airport_candidates_count: Number of other possible departure airports. These are airports in
+                                                 short distance to estArrivalAirport.
         """
         self.icao24 = icao24
         self.first_seen = first_seen
@@ -205,7 +196,7 @@ class FlightConnection(Comparable):
         self.arrival_airport_candidates_count = arrival_airport_candidates_count
 
     @classmethod
-    def from_dict(cls, arrival_dict):
+    def deserialize(cls, arrival_dict: Dict[str: FlightConnectionData]) -> object:
         return cls(
             icao24=arrival_dict["icao24"],
             first_seen=arrival_dict["firstSeen"],

@@ -68,7 +68,7 @@ def test_state_vector__from_list(state_vector_list, expected_state_vector):
 )
 ])
 def test_states__from_dict(states_dict, expected_states):
-    states = States.from_dict(states_dict)
+    states = States.deserialize(states_dict)
 
     assert expected_states.time_in_sec == states.time_in_sec
 
@@ -106,7 +106,7 @@ def test_states__from_dict(states_dict, expected_states):
     )
 ])
 def test_flight_arrival__from_dict(flight_arrival_dict, expected_flight_arrival):
-    flight_arrival = FlightArrival.from_dict(flight_arrival_dict)
+    flight_arrival = FlightArrival.deserialize(flight_arrival_dict)
 
     assert expected_flight_arrival == flight_arrival
 
@@ -144,6 +144,6 @@ def test_flight_arrival__from_dict(flight_arrival_dict, expected_flight_arrival)
     )
 ])
 def test_flight_departure__from_dict(flight_departure_dict, expected_flight_departure):
-    flight_departure = FlightDeparture.from_dict(flight_departure_dict)
+    flight_departure = FlightDeparture.deserialize(flight_departure_dict)
 
     assert expected_flight_departure == flight_departure

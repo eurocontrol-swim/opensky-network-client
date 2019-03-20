@@ -31,7 +31,7 @@ from typing import Callable, Optional, Type
 
 import requests
 
-from base import RequestParamsType, ResponseType
+from base.typing import RequestParams, Response
 
 __author__ = "EUROCONTROL (SWIM)"
 
@@ -64,8 +64,8 @@ class RequestHandler:
 
     def get(self,
             url: str,
-            params: Optional[RequestParamsType] = None,
-            **kwargs: str) -> Type[ResponseType]:
+            params: Optional[RequestParams] = None,
+            **kwargs: str) -> Type[Response]:
         """
         Implements a GET request
 
@@ -78,8 +78,8 @@ class RequestHandler:
 
     def delete(self,
                url: str,
-               params: Optional[RequestParamsType] = None,
-               **kwargs: str) -> Type[ResponseType]:
+               params: Optional[RequestParams] = None,
+               **kwargs: str) -> Type[Response]:
         """
         Implements a DELETE request
 
@@ -92,9 +92,9 @@ class RequestHandler:
 
     def post(self,
              url: str,
-             data: Optional[RequestParamsType] = None,
-             json: Optional[RequestParamsType] = None,
-             **kwargs: str) -> Type[ResponseType]:
+             data: Optional[RequestParams] = None,
+             json: Optional[RequestParams] = None,
+             **kwargs: str) -> Type[Response]:
         """
         Implements a POST request
 
@@ -108,9 +108,9 @@ class RequestHandler:
 
     def put(self,
             url: str,
-            data: Optional[RequestParamsType] = None,
-            json: Optional[RequestParamsType] = None,
-            **kwargs: str) -> Type[ResponseType]:
+            data: Optional[RequestParams] = None,
+            json: Optional[RequestParams] = None,
+            **kwargs: str) -> Type[Response]:
         """
         Implements a PUT request
 
@@ -122,7 +122,7 @@ class RequestHandler:
         """
         return self._do_request(self._request_handler.put, url=url, data=data, json=json, **kwargs)
 
-    def _do_request(self, request_method: Callable, url: str, **kwargs: str) -> Type[ResponseType]:
+    def _do_request(self, request_method: Callable, url: str, **kwargs: str) -> Type[Response]:
         """
 
         :param request_method:

@@ -29,7 +29,8 @@ Details on EUROCONTROL: http://www.eurocontrol.int
 """
 from typing import Optional, Type
 
-from base import RequestHandler, RestClientType
+from base import RequestHandler
+from base.typing import RestClient
 
 __author__ = "EUROCONTROL (SWIM)"
 
@@ -44,7 +45,7 @@ class ClientFactory:
                timeout: int = None,
                username: Optional[str] = None,
                password: Optional[str] = None,
-               **kwargs: str) -> Type[RestClientType]:
+               **kwargs: str) -> Type[RestClient]:
         """
         To be used from a REST client class that inherits from ClientFactory. The returned class will be an instance of
         the REST client class.

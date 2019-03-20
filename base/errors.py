@@ -30,7 +30,7 @@ Details on EUROCONTROL: http://www.eurocontrol.int
 from __future__ import annotations
 from typing import Type
 
-from base import ResponseType
+from base.typing import Response
 
 __author__ = "EUROCONTROL (SWIM)"
 
@@ -42,7 +42,7 @@ class APIError(Exception):
         self.status_code: int = status_code
 
     @classmethod
-    def from_response(cls, response: Type[ResponseType]) -> APIError:
+    def from_response(cls, response: Type[Response]) -> APIError:
         """
         Creates an APIError object with data extracted from the response
         :param response:

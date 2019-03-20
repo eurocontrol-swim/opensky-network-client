@@ -29,7 +29,8 @@ Details on EUROCONTROL: http://www.eurocontrol.int
 """
 from typing import Optional, Union, Generic, Type
 
-from base import BaseModel, RequestParamsType, RequestHandlerType
+from base import BaseModel
+from base.typing import RequestParams, RequestHandler
 from base.errors import APIError
 
 __author__ = "EUROCONTROL (SWIM)"
@@ -38,17 +39,17 @@ __author__ = "EUROCONTROL (SWIM)"
 class RequestProcessor:
     """Manages the entire flow of a HTTP Request/Response"""
 
-    def __init__(self, request_handler: Type[RequestHandlerType]) -> None:
+    def __init__(self, request_handler: Type[RequestHandler]) -> None:
         """
         :param request_handler: an instance of an object capable of handling http requests, i.e. requests.session()
         """
-        self._request_handler: Type[RequestHandlerType] = request_handler
+        self._request_handler: Type[RequestHandler] = request_handler
 
     def process_request(self,
                         method: str,
                         path: str,
-                        extra_params: Optional[RequestParamsType] = None,
-                        json: Optional[RequestParamsType] = None,
+                        extra_params: Optional[RequestParams] = None,
+                        json: Optional[RequestParams] = None,
                         many: bool = False,
                         response_class: Optional[BaseModel] = None) -> Union[list, Generic]:
         """
@@ -82,8 +83,8 @@ class RequestProcessor:
 
         if response_class and result:
             if many:
-                result = (response_class.from_dict(r) for r in result)
+                result = (response_class.deserialize(r) for r in result)
             else:
-                result = response_class.from_dict(result)
+                result = response_class.deserialize(result)
 
         return list(result) if many and result else result
