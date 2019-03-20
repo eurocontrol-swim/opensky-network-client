@@ -27,20 +27,20 @@ http://opensource.org/licenses/BSD-3-Clause
 
 Details on EUROCONTROL: http://www.eurocontrol.int
 """
-from typing import TypeVar, List, Dict, Union
+import typing as t
 
 __author__ = "EUROCONTROL (SWIM)"
 
 
-RequestParams = TypeVar('RequestParams', dict, List[tuple], bytes)
+RequestParams = t.TypeVar('RequestParams', t.Dict[str, t.Any], t.List[tuple], bytes)
 
 # any class that implements REST API functions like GET, POST, PUT, DELETE, i.e. requests.session
-RequestHandler = TypeVar('RequestHandler')
+RequestHandler = t.TypeVar('RequestHandler')
 
 # any class that wraps up data of a REST Response i.e. request.Response
-Response = TypeVar('Response')
+Response = t.TypeVar('Response')
 
 # any class that inherits from ClientFactory and RequestProcessor and interacts with a REST API
-RestClient = TypeVar('RestClient')
+RestClient = t.TypeVar('RestClient')
 
-JsonSerializable = Dict[str, Union[str, int, float, bool]]
+JSONSerializable = t.Union[t.Dict[str, t.Any], t.List[t.Any]]

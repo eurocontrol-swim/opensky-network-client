@@ -111,7 +111,7 @@ class StateVector(BaseModel):
         self.position_source = position_source
 
     @classmethod
-    def from_list(cls, state_vector_list: List[StateVectorData]) -> StateVector:
+    def deserialize(cls, state_vector_list: List[StateVectorData]) -> StateVector:
         """
         :param state_vector_list:
         :return:
@@ -121,7 +121,7 @@ class StateVector(BaseModel):
 
 class States(BaseModel):
 
-    def __init__(self, time_in_sec: int, states: List[List[StateVector]]) -> None:
+    def __init__(self, time_in_sec: int, states: List[StateVector]) -> None:
         """
         Represents the state of the airspace as seen by OpenSky at a particular time.
         :param time_in_sec: time since Unix epoch
@@ -136,8 +136,7 @@ class States(BaseModel):
     def deserialize(cls, states_dict: Dict[str, StateVectorData]) -> States:
         return cls(
             time_in_sec=states_dict['time'],
-            states=[StateVector.from_list(state_vector_list) for state_vector_list in states_dict['states']]
-                if states_dict['states'] is not None else []
+            states=[StateVector.deserialize(state_vector_list) for state_vector_list in states_dict['states']]
         )
 
 
@@ -211,11 +210,3 @@ class FlightConnection(BaseModel):
             departure_airport_candidates_count=arrival_dict["departureAirportCandidatesCount"],
             arrival_airport_candidates_count=arrival_dict["arrivalAirportCandidatesCount"]
         )
-
-
-class FlightArrival(FlightConnection):
-    """Represents a flight arrival for a certain airport."""
-
-
-class FlightDeparture(FlightConnection):
-    """Represents a flight departure for a certain airport."""

@@ -27,7 +27,7 @@ http://opensource.org/licenses/BSD-3-Clause
 
 Details on EUROCONTROL: http://www.eurocontrol.int
 """
-from typing import Callable, Optional, Type
+import typing as t
 
 import requests
 
@@ -47,8 +47,8 @@ class RequestHandler:
                  host: str,
                  https: bool = True,
                  timeout: int = 30,
-                 auth: Optional[tuple] = None,
-                 request_handler_maker: Optional[Callable] = None) -> None:
+                 auth: t.Optional[tuple] = None,
+                 request_handler_maker: t.Optional[t.Callable] = None) -> None:
         """
         :param host: The host of the service to be accessed via the client
         :param https: indicates whether the host serves over TSL or not
@@ -64,8 +64,8 @@ class RequestHandler:
 
     def get(self,
             url: str,
-            params: Optional[RequestParams] = None,
-            **kwargs: str) -> Type[Response]:
+            params: t.Optional[RequestParams] = None,
+            **kwargs: str) -> t.Type[Response]:
         """
         Implements a GET request
 
@@ -78,8 +78,8 @@ class RequestHandler:
 
     def delete(self,
                url: str,
-               params: Optional[RequestParams] = None,
-               **kwargs: str) -> Type[Response]:
+               params: t.Optional[RequestParams] = None,
+               **kwargs: str) -> t.Type[Response]:
         """
         Implements a DELETE request
 
@@ -92,9 +92,9 @@ class RequestHandler:
 
     def post(self,
              url: str,
-             data: Optional[RequestParams] = None,
-             json: Optional[RequestParams] = None,
-             **kwargs: str) -> Type[Response]:
+             data: t.Optional[RequestParams] = None,
+             json: t.Optional[RequestParams] = None,
+             **kwargs: str) -> t.Type[Response]:
         """
         Implements a POST request
 
@@ -108,9 +108,9 @@ class RequestHandler:
 
     def put(self,
             url: str,
-            data: Optional[RequestParams] = None,
-            json: Optional[RequestParams] = None,
-            **kwargs: str) -> Type[Response]:
+            data: t.Optional[RequestParams] = None,
+            json: t.Optional[RequestParams] = None,
+            **kwargs: str) -> t.Type[Response]:
         """
         Implements a PUT request
 
@@ -122,7 +122,7 @@ class RequestHandler:
         """
         return self._do_request(self._request_handler.put, url=url, data=data, json=json, **kwargs)
 
-    def _do_request(self, request_method: Callable, url: str, **kwargs: str) -> Type[Response]:
+    def _do_request(self, request_method: t.Callable, url: str, **kwargs: str) -> t.Type[Response]:
         """
 
         :param request_method:

@@ -29,9 +29,11 @@ Details on EUROCONTROL: http://www.eurocontrol.int
 """
 import pytest
 
-from opensky_network_client.models import StateVector, States, PositionSource, FlightArrival, FlightDeparture
+from opensky_network_client.models import StateVector, States, PositionSource, FlightArrival, FlightDeparture, \
+    FlightConnection
 
 __author__ = "EUROCONTROL (SWIM)"
+
 
 @pytest.mark.parametrize('state_vector_list, expected_state_vector', [
     (["3c6444", "DLH9LF ", "Germany", 1458564120, 1458564120, 6.1546, 50.1964, 9639.3, False, 232.88, 98.26, 4.55, None,
@@ -40,40 +42,40 @@ __author__ = "EUROCONTROL (SWIM)"
                  4.55, None, 9547.86, "1000", False, PositionSource.ASD_B)
      )
 ])
-def test_state_vector__from_list(state_vector_list, expected_state_vector):
-    state_vector = StateVector.from_list(state_vector_list)
+def test_state_vector__deserialize(state_vector_list, expected_state_vector):
+    state_vector = StateVector.deserialize(state_vector_list)
 
     assert expected_state_vector == state_vector
 
 
 @pytest.mark.parametrize('states_dict, expected_states', [
-(
-    {
-        "time": 1458564121,
-        "states": [
-            ["3c6444", "DLH9LF ", "Germany", 1458564120, 1458564120, 6.1546, 50.1964, 9639.3, False, 232.88, 98.26,
-             4.55, None, 9547.86, "1000", False, PositionSource.ASD_B],
-            ["3c6444", "DLH9LF ", "Greece", 1458564120, 1458564120, 6.1546, 50.1964, 9639.3, False, 232.88, 98.26,
-             4.55, None, 9547.86, "1000", False, PositionSource.ASD_B]
-        ]
-    },
-    States(
-        time_in_sec=1458564121,
-        states=[StateVector("3c6444", "DLH9LF ", "Germany", 1458564120, 1458564120, 6.1546, 50.1964, 9639.3, False,
-                            232.88, 98.26, 4.55, None, 9547.86, "1000", False, PositionSource.ASD_B),
-                StateVector("3c6444", "DLH9LF ", "Greece", 1458564120, 1458564120, 6.1546, 50.1964, 9639.3, False,
-                            232.88, 98.26, 4.55, None, 9547.86, "1000", False, PositionSource.ASD_B)
-                ]
+    (
+        {
+            "time": 1458564121,
+            "states": [
+                ["3c6444", "DLH9LF ", "Germany", 1458564120, 1458564120, 6.1546, 50.1964, 9639.3, False, 232.88, 98.26,
+                 4.55, None, 9547.86, "1000", False, PositionSource.ASD_B],
+                ["3c6444", "DLH9LF ", "Greece", 1458564120, 1458564120, 6.1546, 50.1964, 9639.3, False, 232.88, 98.26,
+                 4.55, None, 9547.86, "1000", False, PositionSource.ASD_B]
+            ]
+        },
+        States(
+            time_in_sec=1458564121,
+            states=[StateVector("3c6444", "DLH9LF ", "Germany", 1458564120, 1458564120, 6.1546, 50.1964, 9639.3, False,
+                                232.88, 98.26, 4.55, None, 9547.86, "1000", False, PositionSource.ASD_B),
+                    StateVector("3c6444", "DLH9LF ", "Greece", 1458564120, 1458564120, 6.1546, 50.1964, 9639.3, False,
+                                232.88, 98.26, 4.55, None, 9547.86, "1000", False, PositionSource.ASD_B)
+                    ]
+        )
     )
-)
 ])
-def test_states__from_dict(states_dict, expected_states):
+def test_states__deserialize(states_dict, expected_states):
     states = States.deserialize(states_dict)
 
     assert expected_states.time_in_sec == states.time_in_sec
 
 
-@pytest.mark.parametrize('flight_arrival_dict, expected_flight_arrival', [
+@pytest.mark.parametrize('flight_connection_dict, expected_flight_connection', [
     (
         {
             "icao24": "0101be",
@@ -89,7 +91,7 @@ def test_states__from_dict(states_dict, expected_states):
             "departureAirportCandidatesCount": 0,
             "arrivalAirportCandidatesCount": 2
         },
-        FlightArrival(
+        FlightConnection(
             icao24="0101be",
             first_seen=1517220729,
             est_departure_airport=None,
@@ -105,45 +107,7 @@ def test_states__from_dict(states_dict, expected_states):
         )
     )
 ])
-def test_flight_arrival__from_dict(flight_arrival_dict, expected_flight_arrival):
-    flight_arrival = FlightArrival.deserialize(flight_arrival_dict)
+def test_flight_connection__deserialize(flight_connection_dict, expected_flight_connection):
+    flight_connection = FlightConnection.deserialize(flight_connection_dict)
 
-    assert expected_flight_arrival == flight_arrival
-
-
-@pytest.mark.parametrize('flight_departure_dict, expected_flight_departure', [
-    (
-        {
-            "icao24": "0101be",
-            "firstSeen": 1517220729,
-            "estDepartureAirport": None,
-            "lastSeen": 1517230737,
-            "estArrivalAirport": "EDDF",
-            "callsign": "MSR785 ",
-            "estDepartureAirportHorizDistance": None,
-            "estDepartureAirportVertDistance": None,
-            "estArrivalAirportHorizDistance": 1593,
-            "estArrivalAirportVertDistance": 95,
-            "departureAirportCandidatesCount": 0,
-            "arrivalAirportCandidatesCount": 2
-        },
-        FlightDeparture(
-            icao24="0101be",
-            first_seen=1517220729,
-            est_departure_airport=None,
-            last_seen=1517230737,
-            est_arrival_airport="EDDF",
-            callsign="MSR785 ",
-            est_departure_airport_horiz_distance=None,
-            est_departure_airport_vert_distance=None,
-            est_arrival_airport_horiz_distance=1593,
-            est_arrival_airport_vert_distance=95,
-            departure_airport_candidates_count=0,
-            arrival_airport_candidates_count=2
-        )
-    )
-])
-def test_flight_departure__from_dict(flight_departure_dict, expected_flight_departure):
-    flight_departure = FlightDeparture.deserialize(flight_departure_dict)
-
-    assert expected_flight_departure == flight_departure
+    assert expected_flight_connection == flight_connection

@@ -27,9 +27,9 @@ http://opensource.org/licenses/BSD-3-Clause
 
 Details on EUROCONTROL: http://www.eurocontrol.int
 """
-from typing import Optional, Type
+import typing as t
 
-from base import RequestHandler
+from base.request_handler import RequestHandler
 from base.typing import RestClient
 
 __author__ = "EUROCONTROL (SWIM)"
@@ -43,9 +43,9 @@ class ClientFactory:
                host: str,
                https: bool = True,
                timeout: int = None,
-               username: Optional[str] = None,
-               password: Optional[str] = None,
-               **kwargs: str) -> Type[RestClient]:
+               username: t.Optional[str] = None,
+               password: t.Optional[str] = None,
+               **kwargs: str) -> t.Type[RestClient]:
         """
         To be used from a REST client class that inherits from ClientFactory. The returned class will be an instance of
         the REST client class.

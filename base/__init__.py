@@ -34,11 +34,3 @@ from base.models import BaseModel
 from base.client_factory import ClientFactory
 from base.request_processor import RequestProcessor
 from base.request_handler import RequestHandler
-
-# custom types
-
-# any class that implements REST API functions like GET, POST, PUT, DELETE, i.e. requests.session
-
-# any class that wraps up data of a REST Response i.e. request.Response
-
-# any class that inherits from ClientFactory and RequestProcessor and interacts with a REST API
