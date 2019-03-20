@@ -43,4 +43,4 @@ Response = t.TypeVar('Response')
 # any class that inherits from ClientFactory and RequestProcessor and interacts with a REST API
 RestClient = t.TypeVar('RestClient')
 
-JSONSerializable = t.Union[t.Dict[str, t.Any], t.List[t.Any]]
+JSONType = t.Union[t.Dict[str, t.Any], t.List[t.Any]]

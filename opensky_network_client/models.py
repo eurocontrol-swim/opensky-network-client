@@ -210,3 +210,42 @@ class FlightConnection(BaseModel):
             departure_airport_candidates_count=arrival_dict["departureAirportCandidatesCount"],
             arrival_airport_candidates_count=arrival_dict["arrivalAirportCandidatesCount"]
         )
+
+
+class BoundingBox(BaseModel):
+
+    def __init__(self, lamin: float, lamax: float, lomin: float, lomax: float) -> None:
+        """
+        Represents a bounding box of WGS84 coordinates
+
+        :param lamin: lower bound for the latitude in decimal degrees
+        :param lamax: upper bound for the latitude in decimal degrees
+        :param lomin: lower bound for the longitude in decimal degrees
+        :param lomax: upper bound for the longitude in decimal degrees
+        """
+        self.lamin = self._validate_lat(lamin)
+        self.lamax = self._validate_lat(lamax)
+        self.lomin = self._validate_lon(lomin)
+        self.lomax = self._validate_lon(lomax)
+
+    def serialize(self) -> Dict[str, float]:
+        return {
+            "lamin": self.lamin,
+            "lamax": self.lamax,
+            "lomin": self.lomin,
+            "lomax": self.lomax
+        }
+
+    @staticmethod
+    def _validate_lat(lat):
+        if lat < -90 or lat > 90:
+            raise ValueError(f"Invalid latitude {lat}. Must be in [-90, 90]")
+
+        return lat
+
+    @staticmethod
+    def _validate_lon(lon):
+        if lon < -180 or lon > 180:
+            raise ValueError(f"Invalid longitude {lon}. Must be in [-180, 180]")
+
+        return lon

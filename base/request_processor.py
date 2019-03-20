@@ -51,7 +51,7 @@ class RequestProcessor:
                         extra_params: t.Optional[RequestParams] = None,
                         json: t.Optional[RequestParams] = None,
                         many: bool = False,
-                        response_class: t.Optional[BaseModel] = None) -> t.Union[t.Any, t.List[t.Any]]:
+                        response_class: t.Optional[t.Type[BaseModel]] = None) -> t.Union[t.Any, t.List[t.Any]]:
         """
         Performs a HTTP Request depending on the given method and processes accordingly the Response
 

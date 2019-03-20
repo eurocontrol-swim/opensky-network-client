@@ -30,7 +30,7 @@ Details on EUROCONTROL: http://www.eurocontrol.int
 from __future__ import annotations
 from typing import Any
 
-from base.typing import JSONSerializable
+from base.typing import JSONType
 
 __author__ = "EUROCONTROL (SWIM)"
 
@@ -46,7 +46,7 @@ class BaseModel:
         return not other == self
 
     @classmethod
-    def deserialize(self, object_dict: JSONSerializable) -> BaseModel:
+    def deserialize(self, object_dict: JSONType) -> BaseModel:
         """
         Will be used upon deserialization of the incoming data
 
@@ -54,7 +54,7 @@ class BaseModel:
         """
         pass
 
-    def serialize(self) -> JSONSerializable:
+    def serialize(self) -> JSONType:
         """
         Will be used upon serialization of the outbound data
         """

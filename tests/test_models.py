@@ -29,7 +29,7 @@ Details on EUROCONTROL: http://www.eurocontrol.int
 """
 import pytest
 
-from opensky_network_client.models import StateVector, States, PositionSource, FlightConnection
+from opensky_network_client.models import StateVector, States, PositionSource, FlightConnection, BoundingBox
 
 __author__ = "EUROCONTROL (SWIM)"
 
@@ -113,3 +113,31 @@ def test_flight_connection__deserialize(flight_connection_dict, expected_flight_
     flight_connection = FlightConnection.deserialize(flight_connection_dict)
 
     assert expected_flight_connection == flight_connection
+
+
+@pytest.mark.parametrize('lamin, lamax, lomin, lomax', [
+    (-100, 80, 50, 50),
+    (80, -100, 50, 50),
+    (85, 80, -190, 50),
+    (85, 80, 50, -190),
+])
+def test_bounding_box__incorrect_lat_lon_values__raises_value_error(lamin, lamax, lomin, lomax):
+    with pytest.raises(ValueError):
+        BoundingBox(lamin, lamax, lomin, lomax)
+
+
+@pytest.mark.parametrize('bounding_box, expected_dict', [
+    (
+        BoundingBox(lamin=85.453421, lamax=80.545676, lomin=50.454257, lomax=45.871253),
+        {
+            "lamin": 85.453421,
+            "lamax": 80.545676,
+            "lomin": 50.454257,
+            "lomax": 45.871253
+        }
+    )
+])
+def test_bounding_box__serialize(bounding_box, expected_dict):
+    bounding_box_dict = bounding_box.serialize()
+
+    assert expected_dict == bounding_box_dict

@@ -28,7 +28,7 @@ http://opensource.org/licenses/BSD-3-Clause
 Details on EUROCONTROL: http://www.eurocontrol.int
 """
 from __future__ import annotations
-from typing import Type
+import typing as t
 
 from base.typing import Response
 
@@ -42,7 +42,7 @@ class APIError(Exception):
         self.status_code: int = status_code
 
     @classmethod
-    def from_response(cls, response: Type[Response]) -> APIError:
+    def from_response(cls, response: t.Type[Response]) -> APIError:
         """
         Creates an APIError object with data extracted from the response
         :param response:
