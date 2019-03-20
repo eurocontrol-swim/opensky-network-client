@@ -42,7 +42,7 @@ class ClientFactory:
     def create(cls,
                host: str,
                https: bool = True,
-               timeout: int = None,
+               timeout: t.Optional[int] = None,
                username: t.Optional[str] = None,
                password: t.Optional[str] = None,
                **kwargs: str) -> t.Type[RestClient]:
