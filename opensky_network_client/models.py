@@ -92,22 +92,22 @@ class StateVector(BaseModel):
         :param spi: special purpose indicator
         :param position_source: origin of this state's position: 0 = ADS-B, 1 = ASTERIX, 2 = MLAT, 3 = FLARM
         """
-        self.icao24 = icao24,
-        self.callsign = callsign,
-        self.origin_country = origin_country,
-        self.time_position_in_sec = time_position_in_sec,
-        self.last_contact_in_sec = last_contact_in_sec,
-        self.longitude = longitude,
-        self.latitude = latitude,
-        self.baro_altitude_in_m = baro_altitude_in_m,
-        self.on_ground = on_ground,
-        self.velocity_in_mi_per_sec = velocity_in_mi_per_sec,
-        self.heading = heading,
-        self.vertical_rate_in_m_per_s = vertical_rate_in_m_per_s,
-        self.sensors = sensors,
-        self.geo_altitude_in_m = geo_altitude_in_m,
-        self.squawk = squawk,
-        self.spi = spi,
+        self.icao24 = icao24
+        self.callsign = callsign
+        self.origin_country = origin_country
+        self.time_position_in_sec = time_position_in_sec
+        self.last_contact_in_sec = last_contact_in_sec
+        self.longitude = longitude
+        self.latitude = latitude
+        self.baro_altitude_in_m = baro_altitude_in_m
+        self.on_ground = on_ground
+        self.velocity_in_mi_per_sec = velocity_in_mi_per_sec
+        self.heading = heading
+        self.vertical_rate_in_m_per_s = vertical_rate_in_m_per_s
+        self.sensors = sensors
+        self.geo_altitude_in_m = geo_altitude_in_m
+        self.squawk = squawk
+        self.spi = spi
         self.position_source = position_source
 
     @classmethod

@@ -29,8 +29,7 @@ Details on EUROCONTROL: http://www.eurocontrol.int
 """
 import pytest
 
-from opensky_network_client.models import StateVector, States, PositionSource, FlightArrival, FlightDeparture, \
-    FlightConnection
+from opensky_network_client.models import StateVector, States, PositionSource, FlightConnection
 
 __author__ = "EUROCONTROL (SWIM)"
 
@@ -46,6 +45,7 @@ def test_state_vector__deserialize(state_vector_list, expected_state_vector):
     state_vector = StateVector.deserialize(state_vector_list)
 
     assert expected_state_vector == state_vector
+    assert expected_state_vector.icao24 == "3c6444"
 
 
 @pytest.mark.parametrize('states_dict, expected_states', [
@@ -55,7 +55,7 @@ def test_state_vector__deserialize(state_vector_list, expected_state_vector):
             "states": [
                 ["3c6444", "DLH9LF ", "Germany", 1458564120, 1458564120, 6.1546, 50.1964, 9639.3, False, 232.88, 98.26,
                  4.55, None, 9547.86, "1000", False, PositionSource.ASD_B],
-                ["3c6444", "DLH9LF ", "Greece", 1458564120, 1458564120, 6.1546, 50.1964, 9639.3, False, 232.88, 98.26,
+                ["4b1806", "DLH9LF ", "Greece", 1458564120, 1458564120, 6.1546, 50.1964, 9639.3, False, 232.88, 98.26,
                  4.55, None, 9547.86, "1000", False, PositionSource.ASD_B]
             ]
         },
@@ -63,7 +63,7 @@ def test_state_vector__deserialize(state_vector_list, expected_state_vector):
             time_in_sec=1458564121,
             states=[StateVector("3c6444", "DLH9LF ", "Germany", 1458564120, 1458564120, 6.1546, 50.1964, 9639.3, False,
                                 232.88, 98.26, 4.55, None, 9547.86, "1000", False, PositionSource.ASD_B),
-                    StateVector("3c6444", "DLH9LF ", "Greece", 1458564120, 1458564120, 6.1546, 50.1964, 9639.3, False,
+                    StateVector("4b1806", "DLH9LF ", "Greece", 1458564120, 1458564120, 6.1546, 50.1964, 9639.3, False,
                                 232.88, 98.26, 4.55, None, 9547.86, "1000", False, PositionSource.ASD_B)
                     ]
         )
@@ -72,7 +72,9 @@ def test_state_vector__deserialize(state_vector_list, expected_state_vector):
 def test_states__deserialize(states_dict, expected_states):
     states = States.deserialize(states_dict)
 
-    assert expected_states.time_in_sec == states.time_in_sec
+    assert expected_states == states
+    assert expected_states.states[0].icao24 == "3c6444"
+    assert expected_states.states[1].icao24 == "4b1806"
 
 
 @pytest.mark.parametrize('flight_connection_dict, expected_flight_connection', [
