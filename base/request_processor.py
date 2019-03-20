@@ -83,8 +83,8 @@ class RequestProcessor:
 
         if response_class and result:
             if many:
-                result = (response_class.deserialize(r) for r in result)
+                result = (response_class.from_json(r) for r in result)
             else:
-                result = response_class.deserialize(result)
+                result = response_class.from_json(result)
 
         return list(result) if many and result else result

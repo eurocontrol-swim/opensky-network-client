@@ -111,7 +111,7 @@ class StateVector(BaseModel):
         self.position_source = position_source
 
     @classmethod
-    def deserialize(cls, state_vector_list: List[StateVectorData]) -> StateVector:
+    def from_json(cls, state_vector_list: List[StateVectorData]) -> StateVector:
         """
         :param state_vector_list:
         :return:
@@ -133,10 +133,10 @@ class States(BaseModel):
         self.time = datetime.fromtimestamp(time_in_sec)
 
     @classmethod
-    def deserialize(cls, states_dict: Dict[str, StateVectorData]) -> States:
+    def from_json(cls, states_dict: Dict[str, StateVectorData]) -> States:
         return cls(
             time_in_sec=states_dict['time'],
-            states=[StateVector.deserialize(state_vector_list) for state_vector_list in states_dict['states']]
+            states=[StateVector.from_json(state_vector_list) for state_vector_list in states_dict['states']]
         )
 
 
@@ -195,7 +195,7 @@ class FlightConnection(BaseModel):
         self.arrival_airport_candidates_count = arrival_airport_candidates_count
 
     @classmethod
-    def deserialize(cls, arrival_dict: Dict[str: FlightConnectionData]) -> object:
+    def from_json(cls, arrival_dict: Dict[str: FlightConnectionData]) -> object:
         return cls(
             icao24=arrival_dict["icao24"],
             first_seen=arrival_dict["firstSeen"],
@@ -228,7 +228,7 @@ class BoundingBox(BaseModel):
         self.lomin = self._validate_lon(lomin)
         self.lomax = self._validate_lon(lomax)
 
-    def serialize(self) -> Dict[str, float]:
+    def to_json(self) -> Dict[str, float]:
         return {
             "lamin": self.lamin,
             "lamax": self.lamax,

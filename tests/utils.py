@@ -27,35 +27,50 @@ http://opensource.org/licenses/BSD-3-Clause
 
 Details on EUROCONTROL: http://www.eurocontrol.int
 """
-from __future__ import annotations
-from typing import Any
-
-from base.typing import JSONType
+from opensky_network_client.models import PositionSource, StateVector, States, FlightConnection
 
 __author__ = "EUROCONTROL (SWIM)"
 
 
-class BaseModel:
-    """
-    Base class interface to be inherited from classes representing incoming and outbound data upon a Request/Response.
-    """
-    def __eq__(self, other: Any) -> bool:
-        return isinstance(other, self.__class__) and other.__dict__ == self.__dict__
+def make_states():
+    states_dict = {
+            "time": 1458564121,
+            "states": [
+                ["3c6444", "DLH9LF ", "Germany", 1458564120, 1458564120, 6.1546, 50.1964, 9639.3, False, 232.88, 98.26,
+                 4.55, None, 9547.86, "1000", False, PositionSource.ASD_B],
+                ["4b1806", "DLH9LF ", "Greece", 1458564120, 1458564120, 6.1546, 50.1964, 9639.3, False, 232.88, 98.26,
+                 4.55, None, 9547.86, "1000", False, PositionSource.ASD_B]
+            ]
+        }
 
-    def __ne__(self, other: Any) -> bool:
-        return not other == self
+    states = States.from_json(states_dict)
 
-    @classmethod
-    def from_json(self, object_dict: JSONType) -> BaseModel:
-        """
-        Will be used upon deserialization of the incoming data
+    return states_dict, states
 
-        :param object_dict:
-        """
-        pass
 
-    def to_json(self) -> JSONType:
-        """
-        Will be used upon serialization of the outbound data
-        """
-        pass
+def make_flight_connection(icao24=None):
+    flight_connection_dict = {
+            "icao24": icao24 or "0101be",
+            "firstSeen": 1517220729,
+            "estDepartureAirport": None,
+            "lastSeen": 1517230737,
+            "estArrivalAirport": "EDDF",
+            "callsign": "MSR785 ",
+            "estDepartureAirportHorizDistance": None,
+            "estDepartureAirportVertDistance": None,
+            "estArrivalAirportHorizDistance": 1593,
+            "estArrivalAirportVertDistance": 95,
+            "departureAirportCandidatesCount": 0,
+            "arrivalAirportCandidatesCount": 2
+        }
+
+    flight_connection = FlightConnection.from_json(flight_connection_dict)
+
+    return flight_connection_dict, flight_connection
+
+
+def make_flight_connection_list():
+    flight_connection_dict1, flight_connection1 = make_flight_connection()
+    flight_connection_dict2, flight_connection2 = make_flight_connection(icao24="0101be")
+
+    return [flight_connection_dict1, flight_connection_dict2], [flight_connection1, flight_connection2]

@@ -42,7 +42,7 @@ __author__ = "EUROCONTROL (SWIM)"
      )
 ])
 def test_state_vector__deserialize(state_vector_list, expected_state_vector):
-    state_vector = StateVector.deserialize(state_vector_list)
+    state_vector = StateVector.from_json(state_vector_list)
 
     assert expected_state_vector == state_vector
     assert expected_state_vector.icao24 == "3c6444"
@@ -70,7 +70,7 @@ def test_state_vector__deserialize(state_vector_list, expected_state_vector):
     )
 ])
 def test_states__deserialize(states_dict, expected_states):
-    states = States.deserialize(states_dict)
+    states = States.from_json(states_dict)
 
     assert expected_states == states
     assert expected_states.states[0].icao24 == "3c6444"
@@ -110,7 +110,7 @@ def test_states__deserialize(states_dict, expected_states):
     )
 ])
 def test_flight_connection__deserialize(flight_connection_dict, expected_flight_connection):
-    flight_connection = FlightConnection.deserialize(flight_connection_dict)
+    flight_connection = FlightConnection.from_json(flight_connection_dict)
 
     assert expected_flight_connection == flight_connection
 
@@ -138,6 +138,6 @@ def test_bounding_box__incorrect_lat_lon_values__raises_value_error(lamin, lamax
     )
 ])
 def test_bounding_box__serialize(bounding_box, expected_dict):
-    bounding_box_dict = bounding_box.serialize()
+    bounding_box_dict = bounding_box.to_json()
 
     assert expected_dict == bounding_box_dict
