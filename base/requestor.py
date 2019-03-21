@@ -31,20 +31,20 @@ import typing as t
 from functools import partial
 
 from base import BaseModel
-from base.typing import RequestParams, RequestHandler, Response
+from base.typing import RequestParams, RequestHandler
 from base.errors import APIError
 
 __author__ = "EUROCONTROL (SWIM)"
 
 
-class RequestProcessor:
+class Requestor:
     """Manages the entire flow of a HTTP Request/Response"""
 
-    def __init__(self, request_handler: t.Type[RequestHandler]) -> None:
+    def __init__(self, request_handler: RequestHandler) -> None:
         """
         :param request_handler: an instance of an object capable of handling http requests, i.e. requests.session()
         """
-        self._request_handler: t.Type[RequestHandler] = request_handler
+        self._request_handler: RequestHandler = request_handler
 
     def perform_request(self,
                         method: str,
@@ -71,11 +71,7 @@ class RequestProcessor:
 
         return processed_response
 
-    def _do_request(self,
-                    method: str,
-                    path: str,
-                    extra_params: t.Optional[RequestParams],
-                    json: t.Optional[RequestParams]) -> t.Type[Response]:
+    def _do_request(self, method, path, extra_params=None, json=None):
         methods_map = {
             'GET': partial(self._request_handler.get, path, params=extra_params or {}, json=json),
             'POST': partial(self._request_handler.post, path, json=json),
@@ -92,15 +88,7 @@ class RequestProcessor:
 
         return response
 
-    @staticmethod
-    def _check_status_code(response: t.Type[Response]) -> None:
-        if response.status_code not in [200, 201, 204]:
-            raise APIError.from_response(response)
-
-    def _process_response(self,
-                          response: t.Type[Response],
-                          response_class: t.Type[BaseModel],
-                          many: bool) -> t.Union[t.Any, t.List[t.Any]]:
+    def _process_response(self, response, response_class, many):
         self._check_status_code(response)
 
         response_data = response.json() if len(response.content) > 0 else None
@@ -112,3 +100,8 @@ class RequestProcessor:
                 response_data = response_class.from_json(response_data)
 
         return list(response_data) if many and response_data else response_data
+
+    @staticmethod
+    def _check_status_code(response):
+        if response.status_code not in [200, 201, 204]:
+            raise APIError.from_response(response)

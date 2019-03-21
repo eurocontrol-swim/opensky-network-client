@@ -30,7 +30,7 @@ Details on EUROCONTROL: http://www.eurocontrol.int
 import typing as t
 from datetime import datetime
 
-from base import RequestProcessor, ClientFactory
+from base import Requestor, ClientFactory
 from base.typing import RequestHandler
 from opensky_network_client.models import States, BoundingBox, FlightConnection
 
@@ -39,12 +39,13 @@ __author__ = "EUROCONTROL (SWIM)"
 Timestamp = t.TypeVar('Timestamp', int, datetime)
 ICAO24 = t.Union[str, t.List[str]]
 
-class OpenskyNetworkClient(RequestProcessor, ClientFactory):
+
+class OpenskyNetworkClient(Requestor, ClientFactory):
     def __init__(self, request_handler: RequestHandler) -> None:
         """
         :param request_handler: an instance of an object capable of handling http requests, i.e. requests.session()
         """
-        RequestProcessor.__init__(self, request_handler)
+        Requestor.__init__(self, request_handler)
         self._request_handler = request_handler
 
         self._url_states = 'api/states/all/'

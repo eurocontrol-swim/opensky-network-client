@@ -27,10 +27,16 @@ http://opensource.org/licenses/BSD-3-Clause
 
 Details on EUROCONTROL: http://www.eurocontrol.int
 """
+from base import BaseModel
 
 __author__ = "EUROCONTROL (SWIM)"
 
-from base.models import BaseModel
-from base.client_factory import ClientFactory
-from base.requestor import Requestor
-from base.request_handler import RequestHandler
+
+class TestModel(BaseModel):
+    def __init__(self, a, b):
+        self.a = a
+        self.b = b
+
+    @classmethod
+    def from_json(cls, object_dict):
+        return cls(a=object_dict['a'], b=object_dict['b'])
