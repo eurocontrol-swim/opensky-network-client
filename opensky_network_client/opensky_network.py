@@ -74,7 +74,7 @@ class OpenskyNetworkClient(RequestProcessor, ClientFactory):
         if bbox is not None:
             params.update(bbox.to_json())
 
-        response = self.process_request('GET', self._url_states, extra_params=params, response_class=States)
+        response = self.perform_request('GET', self._url_states, extra_params=params, response_class=States)
 
         return response
 
@@ -86,8 +86,8 @@ class OpenskyNetworkClient(RequestProcessor, ClientFactory):
         """
         params = self._prepare_flight_connection_parameters(airport, begin, end)
 
-        response = self.process_request('GET', self._url_flights_arrival, extra_params=params,
-                                        response_class=FlightConnection, many=True)
+        response = self.perform_request('GET', self._url_flights_arrival, extra_params=params, many=True,
+                                        response_class=FlightConnection)
 
         return response
 
@@ -99,8 +99,8 @@ class OpenskyNetworkClient(RequestProcessor, ClientFactory):
         """
         params = self._prepare_flight_connection_parameters(airport, begin, end)
 
-        response = self.process_request('GET', self._url_flights_departure, extra_params=params,
-                                        response_class=FlightConnection, many=True)
+        response = self.perform_request('GET', self._url_flights_departure, extra_params=params, many=True,
+                                        response_class=FlightConnection)
 
         return response
 

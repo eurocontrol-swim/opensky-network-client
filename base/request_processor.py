@@ -28,9 +28,10 @@ http://opensource.org/licenses/BSD-3-Clause
 Details on EUROCONTROL: http://www.eurocontrol.int
 """
 import typing as t
+from functools import partial
 
 from base import BaseModel
-from base.typing import RequestParams, RequestHandler
+from base.typing import RequestParams, RequestHandler, Response
 from base.errors import APIError
 
 __author__ = "EUROCONTROL (SWIM)"
@@ -45,7 +46,7 @@ class RequestProcessor:
         """
         self._request_handler: t.Type[RequestHandler] = request_handler
 
-    def process_request(self,
+    def perform_request(self,
                         method: str,
                         path: str,
                         extra_params: t.Optional[RequestParams] = None,
@@ -64,27 +65,50 @@ class RequestProcessor:
         :return: response_class or list of response class or dict or list of dict
         :raises: APIError
         """
+        response = self._do_request(method, path, extra_params, json)
 
-        if method == 'GET':
-            response = self._request_handler.get(path, params=extra_params or {}, json=json)
-        elif method == 'POST':
-            response = self._request_handler.post(path, json=json)
-        elif method == 'DELETE':
-            response = self._request_handler.delete(path, json=json)
-        elif method == 'PUT':
-            response = self._request_handler.put(path, json=json)
-        else:
+        processed_response = self._process_response(response, response_class, many)
+
+        return processed_response
+
+    def _do_request(self,
+                    method: str,
+                    path: str,
+                    extra_params: t.Optional[RequestParams],
+                    json: t.Optional[RequestParams]) -> t.Type[Response]:
+        methods_map = {
+            'GET': partial(self._request_handler.get, path, params=extra_params or {}, json=json),
+            'POST': partial(self._request_handler.post, path, json=json),
+            'PUT': partial(self._request_handler.put, path, json=json),
+            'DELETE': partial(self._request_handler.delete, path, json=json)
+        }
+
+        method_func = methods_map.get(method)
+
+        if not method_func:
             raise NotImplementedError(f"Method {method} is not implemented")
 
+        response = method_func()
+
+        return response
+
+    @staticmethod
+    def _check_status_code(response: t.Type[Response]) -> None:
         if response.status_code not in [200, 201, 204]:
             raise APIError.from_response(response)
 
-        result = response.json() if len(response.content) > 0 else None
+    def _process_response(self,
+                          response: t.Type[Response],
+                          response_class: t.Type[BaseModel],
+                          many: bool) -> t.Union[t.Any, t.List[t.Any]]:
+        self._check_status_code(response)
 
-        if response_class and result:
+        response_data = response.json() if len(response.content) > 0 else None
+
+        if response_class and response_data:
             if many:
-                result = (response_class.from_json(r) for r in result)
+                response_data = (response_class.from_json(r) for r in response_data)
             else:
-                result = response_class.from_json(result)
+                response_data = response_class.from_json(response_data)
 
-        return list(result) if many and result else result
+        return list(response_data) if many and response_data else response_data
