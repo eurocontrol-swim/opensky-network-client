@@ -69,7 +69,7 @@ class RequestHandler:
         """
         Implements a GET request
 
-        :param url: the full URL of the Request
+        :param url: the endpoint URL of this Request
         :param params: dict, list of tuples or bytes to send in the query string for the Request
         :param kwargs: optional arguments
         :return: Python object wrapping up Response data after a Request, i.e. requests.Response
@@ -83,7 +83,7 @@ class RequestHandler:
         """
         Implements a DELETE request
 
-        :param url: the full URL of the request
+        :param url: the endpoint URL of this Request
         :param params: dict, list of tuples or bytes to send in the query string for the Request
         :param kwargs: optional extra parameters
         :return: Python object wrapping up Response data after a Request, i.e. requests.Response
@@ -98,7 +98,7 @@ class RequestHandler:
         """
         Implements a POST request
 
-        :param url: the full URL of the request
+        :param url: the endpoint URL of this Request
         :param data: dict, list of tuples, bytes, or file-like object to send in the body of the request
         :param json: A JSON serializable Python object to send in the body of the Request
         :param kwargs: optional extra parameters
@@ -114,7 +114,7 @@ class RequestHandler:
         """
         Implements a PUT request
 
-        :param url:
+        :param url: the endpoint URL of this Request
         :param data: dict, list of tuples, bytes, or file-like object to send in the body of the request
         :param json: A JSON serializable Python object to send in the body of the Request
         :param kwargs: optional extra parameters
@@ -124,12 +124,14 @@ class RequestHandler:
 
     def _do_request(self, request_method: t.Callable, url: str, **kwargs: str) -> t.Type[Response]:
         """
-
-        :param request_method:
-        :param url:
+        :param request_method: the method to be called i.e. get, post, put, delete etc
+        :param url: the endpoint URL of this Request
         :param kwargs: optional extra parameters
         :return:
         """
         url: str = self._base_url + url
+
+        if "timeout" not in kwargs:
+            kwargs["timeout"] = self.timeout
 
         return request_method(url, **kwargs)
