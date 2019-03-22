@@ -32,7 +32,7 @@ from unittest.mock import Mock
 
 import pytest
 
-from base.errors import APIError
+from rest_client.errors import APIError
 from opensky_network_client.models import BoundingBox
 from opensky_network_client.opensky_network import OpenskyNetworkClient
 from tests.utils import make_states, make_flight_connection, make_flight_connection_list

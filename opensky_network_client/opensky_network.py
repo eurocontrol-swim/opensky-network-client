@@ -30,8 +30,8 @@ Details on EUROCONTROL: http://www.eurocontrol.int
 import typing as t
 from datetime import datetime
 
-from base import Requestor, ClientFactory
-from base.typing import RequestHandler
+from rest_client import Requestor, ClientFactory
+from rest_client.typing import RequestHandler
 from opensky_network_client.models import States, BoundingBox, FlightConnection
 
 __author__ = "EUROCONTROL (SWIM)"

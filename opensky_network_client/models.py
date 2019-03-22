@@ -32,7 +32,7 @@ import enum
 from datetime import datetime
 from typing import Optional, List, TypeVar, Dict
 
-from base import BaseModel
+from rest_client import BaseModel
 
 __author__ = "EUROCONTROL (SWIM)"
 

@@ -15,7 +15,7 @@ dependencies:
   - pip=19.0.3=py37_0
   - pluggy=0.9.0=py37_0
   - py=1.8.0=py37_0
-  - pytest=4.3.0=py37_0
+  - pytest=4.3.1=py37_0
   - pytest-cov=2.6.1=py37_0
   - python=3.7.2=h0371630_0
   - readline=7.0=h7b6447c_5
@@ -30,4 +30,5 @@ dependencies:
     - chardet==3.0.4
     - idna==2.8
     - requests==2.21.0
+    - rest-client==0.0.1
     - urllib3==1.24.1
