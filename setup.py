@@ -39,9 +39,7 @@ setup(
     author_email='',
     packages=find_packages(exclude=['tests']),
     url='https://bitbucket.org/antavelos-eurocontrol/opensky-network-client',
-    install_requires=[
-        'requests'
-    ],
+    install_requires=[],
     tests_require=[
         'pytest',
         'pytest-cov'

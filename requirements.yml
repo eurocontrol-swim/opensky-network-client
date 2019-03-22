@@ -4,5 +4,4 @@ dependencies:
   - pytest
   - pytest-cov
   - pip:
-      - requests
       - git+ssh://git@bitbucket.org/antavelos-eurocontrol/rest-client.git
