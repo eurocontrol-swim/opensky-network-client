@@ -27,6 +27,7 @@ http://opensource.org/licenses/BSD-3-Clause
 
 Details on EUROCONTROL: http://www.eurocontrol.int
 """
+
 import typing as t
 from datetime import datetime
 
@@ -55,7 +56,8 @@ class OpenskyNetworkClient(Requestor, ClientFactory):
     def get_states(self,
                    timestamp: Timestamp = 0,
                    icao24: t.Optional[ICAO24] = None,
-                   bbox: t.Optional[BoundingBox] = None) -> t.Type[States]:
+                   bbox: t.Optional[BoundingBox] = None,
+                   json: t.Optional[bool] = False) -> t.Type[States]:
         """
         :param timestamp: the time in seconds since Unix epoch or datetime. Current time will be used if omitted.
         :param icao24: one or more ICAO24 transponder addresses represented by a hex string (e.g. abc9f3). If omitted,
@@ -65,43 +67,66 @@ class OpenskyNetworkClient(Requestor, ClientFactory):
         if isinstance(timestamp, datetime):
             timestamp = int(timestamp.timestamp())
 
-        params = {
-            "time": timestamp,
+        kwargs = {
+            'extra_params': {
+                "time": timestamp,
+            }
         }
 
         if icao24 is not None:
-            params.update({"icao24": icao24})
+            kwargs['extra_params'].update({"icao24": icao24})
 
         if bbox is not None:
-            params.update(bbox.to_json())
+            kwargs['extra_params'].update(bbox.to_json())
 
-        response = self.perform_request('GET', self._url_states, extra_params=params, response_class=States)
+        if not json:
+            kwargs.update({'response_class': States})
+
+        response = self.perform_request('GET', self._url_states, **kwargs)
 
         return response
 
-    def get_flight_arrivals(self, airport: str, begin: Timestamp, end: Timestamp) -> t.List[FlightConnection]:
+    def get_flight_arrivals(self,
+                            airport: str,
+                            begin: Timestamp,
+                            end: Timestamp,
+                            json: t.Optional[bool] = False) -> t.List[FlightConnection]:
         """
         :param airport: ICAO identier for the airport
         :param begin: Start of time interval to retrieve flights for as Unix time (seconds since epoch) or datetime
         :param end: End of time interval to retrieve flights for as Unix time (seconds since epoch) or datetime
         """
-        params = self._prepare_flight_connection_parameters(airport, begin, end)
+        kwargs = {
+            'extra_params': self._prepare_flight_connection_parameters(airport, begin, end),
+            'many': True
+        }
 
-        response = self.perform_request('GET', self._url_flights_arrival, extra_params=params, many=True,
-                                        response_class=FlightConnection)
+        if not json:
+            kwargs.update({'response_class': FlightConnection})
+
+        response = self.perform_request('GET', self._url_flights_arrival, **kwargs)
 
         return response
 
-    def get_flight_departures(self, airport: str, begin: Timestamp, end: Timestamp) -> t.List[FlightConnection]:
+    def get_flight_departures(self,
+                              airport: str,
+                              begin: Timestamp,
+                              end: Timestamp,
+                              json: t.Optional[bool] = False) -> t.List[FlightConnection]:
         """
         :param airport: ICAO identier for the airport
         :param begin: Start of time interval to retrieve flights for as Unix time (seconds since epoch) or datetime
         :param end: End of time interval to retrieve flights for as Unix time (seconds since epoch) or datetime
         """
-        params = self._prepare_flight_connection_parameters(airport, begin, end)
+        kwargs = {
+            'extra_params': self._prepare_flight_connection_parameters(airport, begin, end),
+            'many': True
+        }
 
-        response = self.perform_request('GET', self._url_flights_departure, extra_params=params, many=True,
-                                        response_class=FlightConnection)
+        if not json:
+            kwargs.update({'response_class': FlightConnection})
+
+        response = self.perform_request('GET', self._url_flights_departure, **kwargs)
 
         return response
 
