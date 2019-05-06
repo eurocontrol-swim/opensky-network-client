@@ -40,6 +40,8 @@ __author__ = "EUROCONTROL (SWIM)"
 StateVectorData = TypeVar('StateVectorData', str, bool, int, float)
 FlightConnectionData = TypeVar('FlightConnectionData', str, int)
 
+# TODO: add .to_json() in all models
+
 
 class PositionSource(enum.Enum):
     ASD_B = 0
