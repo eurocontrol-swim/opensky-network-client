@@ -30,7 +30,7 @@ Details on EUROCONTROL: http://www.eurocontrol.int
 from __future__ import annotations
 import enum
 from datetime import datetime
-from typing import Optional, List, TypeVar, Dict
+from typing import Optional, List, TypeVar, Dict, Union
 
 from rest_client import BaseModel
 
@@ -251,3 +251,94 @@ class BoundingBox(BaseModel):
             raise ValueError(f"Invalid longitude {lon}. Must be in [-180, 180]")
 
         return lon
+
+
+class Position(BaseModel):
+
+    def __init__(self, longitude: float, latitude: float, altitude: float, reasonable: bool):
+        """
+
+        :param longitude:
+        :param latitude:
+        :param altitude:
+        :param reasonable:
+        """
+        self.longitude = longitude
+        self.latitude = latitude
+        self.altitude = altitude
+        self.reasonable = reasonable
+
+    @classmethod
+    def from_json(cls, position_dict: Dict[str, Union[str, float, bool, None]]) -> Position:
+        return cls(
+            longitude=position_dict["longitude"],
+            latitude=position_dict["latitude"],
+            altitude=position_dict["altitude"],
+            reasonable=position_dict["reasonable"]
+        )
+
+
+class Airport(BaseModel):
+
+    def __init__(self,
+                 icao: str,
+                 iata: str,
+                 name: str,
+                 city: str,
+                 type: str,
+                 position: Position,
+                 continent: str,
+                 country: str,
+                 region: str,
+                 municipality: str,
+                 gpsCode: str,
+                 homepage: str,
+                 wikipedia: str) -> None:
+        """
+
+        :param icao:
+        :param iata:
+        :param name:
+        :param city:
+        :param type:
+        :param position:
+        :param continent:
+        :param country:
+        :param region:
+        :param municipality:
+        :param gpsCode:
+        :param homepage:
+        :param wikipedia:
+        """
+
+        self.icao=icao
+        self.iata=iata
+        self.name=name
+        self.city=city
+        self.type=type
+        self.position=position
+        self.continent=continent
+        self.country=country
+        self.region=region
+        self.municipality=municipality
+        self.gpsCode=gpsCode
+        self.homepage=homepage
+        self.wikipedia=wikipedia
+
+    @classmethod
+    def from_json(cls, airport_dict):
+        return cls(
+            icao=airport_dict["icao"],
+            iata=airport_dict["iata"],
+            name=airport_dict["name"],
+            city=airport_dict["city"],
+            type=airport_dict["type"],
+            position=Position.from_json(airport_dict["position"]),
+            continent=airport_dict["continent"],
+            country=airport_dict["country"],
+            region=airport_dict["region"],
+            municipality=airport_dict["municipality"],
+            gpsCode=airport_dict["gpsCode"],
+            homepage=airport_dict["homepage"],
+            wikipedia=airport_dict["wikipedia"]
+        )

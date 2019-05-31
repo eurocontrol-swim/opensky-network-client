@@ -27,7 +27,7 @@ http://opensource.org/licenses/BSD-3-Clause
 
 Details on EUROCONTROL: http://www.eurocontrol.int
 """
-from opensky_network_client.models import PositionSource, StateVector, States, FlightConnection
+from opensky_network_client.models import PositionSource, StateVector, States, FlightConnection, Airport
 
 __author__ = "EUROCONTROL (SWIM)"
 
@@ -67,6 +67,33 @@ def make_flight_connection(icao24=None):
     flight_connection = FlightConnection.from_json(flight_connection_dict)
 
     return flight_connection_dict, flight_connection
+
+
+def make_airport():
+    airport_dict = {
+        'icao': 'UUEE',
+        'iata': 'SVO',
+        'name': 'Sheremetyevo International Airport',
+        'city': None,
+        'type': None,
+        'position': {
+            'longitude': 37.4146,
+            'latitude': 55.972599,
+            'altitude': 189.5856,
+            'reasonable': True,
+        },
+        'continent': 'EU',
+        'country': 'RU',
+        'region': 'RU-MOS',
+        'municipality': 'Moscow',
+        'gpsCode': 'UUEE',
+        'homepage': 'http://www.svo.aero/en/',
+        'wikipedia': 'http://en.wikipedia.org/wiki/Sheremetyevo_International_Airport'
+    }
+
+    airport = Airport.from_json(airport_dict)
+
+    return airport_dict, airport
 
 
 def make_flight_connection_list():

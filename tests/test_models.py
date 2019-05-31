@@ -29,7 +29,8 @@ Details on EUROCONTROL: http://www.eurocontrol.int
 """
 import pytest
 
-from opensky_network_client.models import StateVector, States, PositionSource, FlightConnection, BoundingBox
+from opensky_network_client.models import StateVector, States, PositionSource, FlightConnection, BoundingBox, Airport, \
+    Position
 
 __author__ = "EUROCONTROL (SWIM)"
 
@@ -41,7 +42,7 @@ __author__ = "EUROCONTROL (SWIM)"
                  4.55, None, 9547.86, "1000", False, PositionSource.ASD_B)
      )
 ])
-def test_state_vector__deserialize(state_vector_list, expected_state_vector):
+def test_state_vector__from_json(state_vector_list, expected_state_vector):
     state_vector = StateVector.from_json(state_vector_list)
 
     assert expected_state_vector == state_vector
@@ -69,7 +70,7 @@ def test_state_vector__deserialize(state_vector_list, expected_state_vector):
         )
     )
 ])
-def test_states__deserialize(states_dict, expected_states):
+def test_states__from_json(states_dict, expected_states):
     states = States.from_json(states_dict)
 
     assert expected_states == states
@@ -109,7 +110,7 @@ def test_states__deserialize(states_dict, expected_states):
         )
     )
 ])
-def test_flight_connection__deserialize(flight_connection_dict, expected_flight_connection):
+def test_flight_connection__from_json(flight_connection_dict, expected_flight_connection):
     flight_connection = FlightConnection.from_json(flight_connection_dict)
 
     assert expected_flight_connection == flight_connection
@@ -141,3 +142,55 @@ def test_bounding_box__serialize(bounding_box, expected_dict):
     bounding_box_dict = bounding_box.to_json()
 
     assert expected_dict == bounding_box_dict
+
+
+@pytest.mark.parametrize('airport_dict, expected_airport', [
+    (
+
+        {
+            'icao': 'UUEE',
+            'iata': 'SVO',
+            'name': 'Sheremetyevo International Airport',
+            'city': None,
+            'type': None,
+            'position': {
+                'longitude': 37.4146,
+                'latitude': 55.972599,
+                'altitude': 189.5856,
+                'reasonable': True,
+            },
+            'continent': 'EU',
+            'country': 'RU',
+            'region': 'RU-MOS',
+            'municipality': 'Moscow',
+            'gpsCode': 'UUEE',
+            'homepage': 'http://www.svo.aero/en/',
+            'wikipedia': 'http://en.wikipedia.org/wiki/Sheremetyevo_International_Airport'
+        }
+    ,
+        Airport(
+            icao='UUEE',
+            iata='SVO',
+            name='Sheremetyevo International Airport',
+            city=None,
+            type=None,
+            position=Position(
+                longitude=37.4146,
+                latitude=55.972599,
+                altitude=189.5856,
+                reasonable=True
+            ),
+            continent='EU',
+            country='RU',
+            region='RU-MOS',
+            municipality='Moscow',
+            gpsCode='UUEE',
+            homepage='http://www.svo.aero/en/',
+            wikipedia='http://en.wikipedia.org/wiki/Sheremetyevo_International_Airport'
+        )
+    )
+])
+def test_airport__from_json(airport_dict, expected_airport):
+    airport = Airport.from_json(airport_dict)
+
+    assert expected_airport == airport

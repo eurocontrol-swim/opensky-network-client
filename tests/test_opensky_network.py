@@ -35,7 +35,7 @@ import pytest
 from rest_client.errors import APIError
 from opensky_network_client.models import BoundingBox
 from opensky_network_client.opensky_network import OpenskyNetworkClient
-from tests.utils import make_states, make_flight_connection, make_flight_connection_list
+from tests.utils import make_states, make_flight_connection_list, make_airport
 
 __author__ = "EUROCONTROL (SWIM)"
 
@@ -160,7 +160,7 @@ def test_get_flight_arrivals__http_error_code__raises_api_error(error_code):
     client = OpenskyNetworkClient(request_handler=request_handler)
 
     with pytest.raises(APIError):
-        client.get_flight_arrivals(airport='EDDF', begin=1517227200, end=1517230800)
+        client.get_flight_arrivals(icao='EDDF', begin=1517227200, end=1517230800)
 
 
 def test_get_flight_arrivals__flight_arrivals_object_is_returned():
@@ -177,7 +177,7 @@ def test_get_flight_arrivals__flight_arrivals_object_is_returned():
     client = OpenskyNetworkClient(request_handler=request_handler)
 
     params = {
-        'airport': 'EDDF',
+        'icao': 'EDDF',
         'begin': 1517227200,
         'end': 1517230800
     }
@@ -186,7 +186,7 @@ def test_get_flight_arrivals__flight_arrivals_object_is_returned():
     assert expected_flight_arrivals_list == flight_arrivals
 
     call_args = request_handler.get.call_args[1]
-    assert call_args['params']['airport'] == params['airport']
+    assert call_args['params']['icao'] == params['icao']
     assert call_args['params']['begin'] == params['begin']
     assert call_args['params']['end'] == params['end']
 
@@ -205,7 +205,7 @@ def test_get_flight_arrivals__json_true__flight_arrivals_dict_is_returned():
     client = OpenskyNetworkClient(request_handler=request_handler)
 
     params = {
-        'airport': 'EDDF',
+        'icao': 'EDDF',
         'begin': 1517227200,
         'end': 1517230800,
         'json': True
@@ -215,7 +215,7 @@ def test_get_flight_arrivals__json_true__flight_arrivals_dict_is_returned():
     assert flight_arrivals_dict_list == flight_arrivals
 
     call_args = request_handler.get.call_args[1]
-    assert call_args['params']['airport'] == params['airport']
+    assert call_args['params']['icao'] == params['icao']
     assert call_args['params']['begin'] == params['begin']
     assert call_args['params']['end'] == params['end']
 
@@ -235,7 +235,7 @@ def test_get_flight_arrivals__with_begin_end_datetime__is_converted_to_int_and_f
 
     timestamp = datetime.now()
     params = {
-        'airport': 'EDDF',
+        'icao': 'EDDF',
         'begin': timestamp,
         'end': timestamp
     }
@@ -244,7 +244,7 @@ def test_get_flight_arrivals__with_begin_end_datetime__is_converted_to_int_and_f
     assert expected_flight_arrivals_list == flight_arrivals
 
     call_args = request_handler.get.call_args[1]
-    assert call_args['params']['airport'] == params['airport']
+    assert call_args['params']['icao'] == params['icao']
     assert call_args['params']['begin'] == int(params['begin'].timestamp())
     assert call_args['params']['end'] == int(params['end'].timestamp())
 
@@ -260,7 +260,7 @@ def test_get_flight_departures__http_error_code__raises_api_error(error_code):
     client = OpenskyNetworkClient(request_handler=request_handler)
 
     with pytest.raises(APIError):
-        client.get_flight_departures(airport='EDDF', begin=1517227200, end=1517230800)
+        client.get_flight_departures(icao='EDDF', begin=1517227200, end=1517230800)
 
 
 def test_get_flight_departures__flight_departures_object_is_returned():
@@ -277,7 +277,7 @@ def test_get_flight_departures__flight_departures_object_is_returned():
     client = OpenskyNetworkClient(request_handler=request_handler)
 
     params = {
-        'airport': 'EDDF',
+        'icao': 'EDDF',
         'begin': 1517227200,
         'end': 1517230800
     }
@@ -286,7 +286,7 @@ def test_get_flight_departures__flight_departures_object_is_returned():
     assert expected_flight_departures_list == flight_departures
 
     call_args = request_handler.get.call_args[1]
-    assert call_args['params']['airport'] == params['airport']
+    assert call_args['params']['icao'] == params['icao']
     assert call_args['params']['begin'] == params['begin']
     assert call_args['params']['end'] == params['end']
 
@@ -305,7 +305,7 @@ def test_get_flight_departures__json_true__flight_departures_dict_is_returned():
     client = OpenskyNetworkClient(request_handler=request_handler)
 
     params = {
-        'airport': 'EDDF',
+        'icao': 'EDDF',
         'begin': 1517227200,
         'end': 1517230800,
         'json': True
@@ -315,7 +315,7 @@ def test_get_flight_departures__json_true__flight_departures_dict_is_returned():
     assert flight_departures_dict_list == flight_departures
 
     call_args = request_handler.get.call_args[1]
-    assert call_args['params']['airport'] == params['airport']
+    assert call_args['params']['icao'] == params['icao']
     assert call_args['params']['begin'] == params['begin']
     assert call_args['params']['end'] == params['end']
 
@@ -335,7 +335,7 @@ def test_get_flight_departures__with_begin_end_datetime__is_converted_to_int_and
 
     timestamp = datetime.now()
     params = {
-        'airport': 'EDDF',
+        'icao': 'EDDF',
         'begin': timestamp,
         'end': timestamp
     }
@@ -344,6 +344,69 @@ def test_get_flight_departures__with_begin_end_datetime__is_converted_to_int_and
     assert expected_flight_departures_list == flight_departures
 
     call_args = request_handler.get.call_args[1]
-    assert call_args['params']['airport'] == params['airport']
+    assert call_args['params']['icao'] == params['icao']
     assert call_args['params']['begin'] == int(params['begin'].timestamp())
     assert call_args['params']['end'] == int(params['end'].timestamp())
+
+
+@pytest.mark.parametrize('error_code', [400, 401, 403, 404, 500])
+def test_get_airport__http_error_code__raises_api_error(error_code):
+    response = Mock()
+    response.status_code = error_code
+
+    request_handler = Mock()
+    request_handler.get = Mock(return_value=response)
+
+    client = OpenskyNetworkClient(request_handler=request_handler)
+
+    with pytest.raises(APIError):
+        client.get_airport(icao='EDDF')
+
+
+def test_get_airport__airport_object_is_returned():
+    airport_dict, expected_airport = make_airport()
+
+    response = Mock()
+    response.status_code = 200
+    response.content = airport_dict
+    response.json = Mock(return_value=airport_dict)
+
+    request_handler = Mock()
+    request_handler.get = Mock(return_value=response)
+
+    client = OpenskyNetworkClient(request_handler=request_handler)
+
+    params = {
+        'icao': 'EDDF'
+    }
+    airport = client.get_airport(**params)
+
+    assert expected_airport == airport
+
+    call_args = request_handler.get.call_args[1]
+    assert call_args['params']['icao'] == params['icao']
+
+
+def test_get_airport__json_true__airport_dict_is_returned():
+    airport_dict, _ = make_airport()
+
+    response = Mock()
+    response.status_code = 200
+    response.content = airport_dict
+    response.json = Mock(return_value=airport_dict)
+
+    request_handler = Mock()
+    request_handler.get = Mock(return_value=response)
+
+    client = OpenskyNetworkClient(request_handler=request_handler)
+
+    params = {
+        'icao': 'EDDF',
+        'json': True
+    }
+    airport = client.get_airport(**params)
+
+    assert airport_dict == airport
+
+    call_args = request_handler.get.call_args[1]
+    assert call_args['params']['icao'] == params['icao']
