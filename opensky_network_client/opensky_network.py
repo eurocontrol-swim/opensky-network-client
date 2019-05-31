@@ -88,17 +88,17 @@ class OpenskyNetworkClient(Requestor, ClientFactory):
         return response
 
     def get_flight_arrivals(self,
-                            icao: str,
+                            airport: str,
                             begin: Timestamp,
                             end: Timestamp,
                             json: t.Optional[bool] = False) -> t.List[FlightConnection]:
         """
-        :param icao: ICAO identier for the airport
+        :param airport: ICAO identier for the airport
         :param begin: Start of time interval to retrieve flights for as Unix time (seconds since epoch) or datetime
         :param end: End of time interval to retrieve flights for as Unix time (seconds since epoch) or datetime
         """
         kwargs = {
-            'extra_params': self._prepare_flight_connection_parameters(icao, begin, end),
+            'extra_params': self._prepare_flight_connection_parameters(airport, begin, end),
             'many': True
         }
 
@@ -110,17 +110,17 @@ class OpenskyNetworkClient(Requestor, ClientFactory):
         return response
 
     def get_flight_departures(self,
-                              icao: str,
+                              airport: str,
                               begin: Timestamp,
                               end: Timestamp,
                               json: t.Optional[bool] = False) -> t.List[FlightConnection]:
         """
-        :param icao: ICAO identier for the airport
+        :param airport: ICAO identier for the airport
         :param begin: Start of time interval to retrieve flights for as Unix time (seconds since epoch) or datetime
         :param end: End of time interval to retrieve flights for as Unix time (seconds since epoch) or datetime
         """
         kwargs = {
-            'extra_params': self._prepare_flight_connection_parameters(icao, begin, end),
+            'extra_params': self._prepare_flight_connection_parameters(airport, begin, end),
             'many': True
         }
 
@@ -149,7 +149,7 @@ class OpenskyNetworkClient(Requestor, ClientFactory):
         return response
 
     @staticmethod
-    def _prepare_flight_connection_parameters(icao: str,
+    def _prepare_flight_connection_parameters(airport: str,
                                               begin: Timestamp,
                                               end: Timestamp) -> t.Dict[str, t.Union[str, int]]:
         if isinstance(begin, datetime):
@@ -159,7 +159,7 @@ class OpenskyNetworkClient(Requestor, ClientFactory):
             end = int(end.timestamp())
 
         return {
-            "icao": icao,
+            "airport": airport,
             "begin": begin,
             "end": end
         }
