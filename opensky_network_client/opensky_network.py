@@ -58,7 +58,7 @@ class OpenskyNetworkClient(Requestor, ClientFactory):
                    timestamp: Timestamp = 0,
                    icao24: t.Optional[ICAO24] = None,
                    bbox: t.Optional[BoundingBox] = None,
-                   json: t.Optional[bool] = False) -> t.Type[States]:
+                   json: t.Optional[bool] = False) -> States:
         """
         :param timestamp: the time in seconds since Unix epoch or datetime. Current time will be used if omitted.
         :param icao24: one or more ICAO24 transponder addresses represented by a hex string (e.g. abc9f3). If omitted,
@@ -131,7 +131,7 @@ class OpenskyNetworkClient(Requestor, ClientFactory):
 
         return response
 
-    def get_airport(self, icao: str, json: t.Optional[bool] = False):
+    def get_airport(self, icao: str, json: t.Optional[bool] = False) -> Airport:
         """
         :param icao: ICAO identier for the airport
         """
