@@ -27,7 +27,6 @@ http://opensource.org/licenses/BSD-3-Clause
 
 Details on EUROCONTROL: http://www.eurocontrol.int
 """
-from __future__ import annotations
 import enum
 from datetime import datetime
 from typing import Optional, List, TypeVar, Dict, Union
@@ -113,10 +112,10 @@ class StateVector(BaseModel):
         self.position_source = position_source
 
     @classmethod
-    def from_json(cls, state_vector_list: List[StateVectorData]) -> StateVector:
+    def from_json(cls, state_vector_list: List[StateVectorData]):
         """
         :param state_vector_list:
-        :return:
+        :return: StateVector
         """
         return cls(*state_vector_list)
 
@@ -135,7 +134,12 @@ class States(BaseModel):
         self.time = datetime.fromtimestamp(time_in_sec)
 
     @classmethod
-    def from_json(cls, states_dict: Dict[str, StateVectorData]) -> States:
+    def from_json(cls, states_dict: Dict[str, StateVectorData]):
+        """
+
+        :param states_dict:
+        :return: States
+        """
         return cls(
             time_in_sec=states_dict['time'],
             states=[StateVector.from_json(state_vector_list) for state_vector_list in states_dict['states']]
@@ -197,7 +201,7 @@ class FlightConnection(BaseModel):
         self.arrival_airport_candidates_count = arrival_airport_candidates_count
 
     @classmethod
-    def from_json(cls, arrival_dict: Dict[str: FlightConnectionData]) -> object:
+    def from_json(cls, arrival_dict: Dict[str, FlightConnectionData]):
         return cls(
             icao24=arrival_dict["icao24"],
             first_seen=arrival_dict["firstSeen"],
@@ -269,7 +273,12 @@ class Position(BaseModel):
         self.reasonable = reasonable
 
     @classmethod
-    def from_json(cls, position_dict: Dict[str, Union[str, float, bool, None]]) -> Position:
+    def from_json(cls, position_dict: Dict[str, Union[str, float, bool, None]]):
+        """
+
+        :param position_dict:
+        :return: Position
+        """
         return cls(
             longitude=position_dict["longitude"],
             latitude=position_dict["latitude"],

@@ -33,7 +33,7 @@ __author__ = 'EUROCONTROL (SWIM)'
 
 setup(
     name='opensky-network-client',
-    version='0.0.5',
+    version='0.0.6',
     description='Opensky Network Client',
     author='EUROCONTROL (SWIM)',
     author_email='',
