@@ -29,7 +29,7 @@ Details on EUROCONTROL: http://www.eurocontrol.int
 """
 import enum
 from datetime import datetime
-from typing import Optional, List, TypeVar, Dict, Union
+from typing import Optional, List, TypeVar, Dict, Union, Any
 
 from rest_client import BaseModel
 
@@ -61,37 +61,43 @@ class StateVector(BaseModel):
                  latitude: Optional[float],
                  baro_altitude_in_m: Optional[float],
                  on_ground: bool,
-                 velocity_in_mi_per_sec: Optional[float],
-                 heading: Optional[float],
-                 vertical_rate_in_m_per_s: Optional[float],
+                 velocity_in_m_per_sec: Optional[float],
+                 true_track: Optional[float],
+                 vertical_rate_in_m_per_sec: Optional[float],
                  sensors: Optional[str],
                  geo_altitude_in_m: Optional[float],
                  squawk: Optional[str],
                  spi: bool,
-                 position_source: PositionSource) -> None:
+                 position_source: PositionSource,
+                 *args) -> None:
         """
         Represents the state of a vehicle at a particular time
 
         :param icao24: ICAO24 address of the transmitter in hex string representation.
         :param callsign: callsign of the vehicle. Can be None if no callsign has been received.
         :param origin_country: inferred through the ICAO24 address
-        :param time_position_in_sec: seconds since epoch of last position report. Can be None if there was no position
-                                     report received by OpenSky within 15s before.
-        :param last_contact_in_sec: seconds since epoch of last received message from this transponder
+        :param time_position_in_sec: seconds since epoch of last position report. Can be None if
+                                     there was no position report received by OpenSky within 15s
+                                     before.
+        :param last_contact_in_sec: seconds since epoch of last received message from this
+                                    transponder
         :param longitude: in ellipsoidal coordinates (WGS-84) and degrees. Can be None
         :param latitude: in ellipsoidal coordinates (WGS-84) and degrees. Can be None
         :param baro_altitude_in_m: barometric altitude in meters. Can be None
         :param on_ground: true if aircraft is on ground (sends ADS-B surface position reports).
-        :param velocity_in_mi_per_sec: over ground in m/s. Can be None if information not present
-        :param heading: in decimal degrees (0 is north). Can be None if information not present.
-        :param vertical_rate_in_m_per_s: in m/s, incline is positive, decline negative. Can be None if information not
-                                         present.
-        :param sensors: serial numbers of sensors which received messages from the vehicle within the validity period of
-                        this state vector. Can be None if no filtering for sensor has been requested.
+        :param velocity_in_m_per_sec: over ground in m/s. Can be None if information not present
+        :param true_track: True track in decimal degrees clockwise from north (north=0°). Can be
+                           null.
+        :param vertical_rate_in_m_per_sec: in m/s, incline is positive, decline negative. Can be
+                                           None if information not present.
+        :param sensors: serial numbers of sensors which received messages from the vehicle within
+                        the validity period of this state vector. Can be None if no filtering for
+                        sensor has been requested.
         :param geo_altitude_in_m: geometric altitude in meters. Can be None
         :param squawk: transponder code aka Squawk. Can be None
         :param spi: special purpose indicator
-        :param position_source: origin of this state's position: 0 = ADS-B, 1 = ASTERIX, 2 = MLAT, 3 = FLARM
+        :param position_source: origin of this state's position: 0 = ADS-B, 1 = ASTERIX, 2 = MLAT,
+                                3 = FLARM
         """
         self.icao24 = icao24
         self.callsign = callsign
@@ -102,14 +108,15 @@ class StateVector(BaseModel):
         self.latitude = latitude
         self.baro_altitude_in_m = baro_altitude_in_m
         self.on_ground = on_ground
-        self.velocity_in_mi_per_sec = velocity_in_mi_per_sec
-        self.heading = heading
-        self.vertical_rate_in_m_per_s = vertical_rate_in_m_per_s
+        self.velocity_in_m_per_sec = velocity_in_m_per_sec
+        self.true_track = true_track
+        self.vertical_rate_in_m_per_sec = vertical_rate_in_m_per_sec
         self.sensors = sensors
         self.geo_altitude_in_m = geo_altitude_in_m
         self.squawk = squawk
         self.spi = spi
         self.position_source = position_source
+        self._rest_args = args
 
     @classmethod
     def from_json(cls, state_vector_list: List[StateVectorData]):
@@ -142,7 +149,10 @@ class States(BaseModel):
         """
         return cls(
             time_in_sec=states_dict['time'],
-            states=[StateVector.from_json(state_vector_list) for state_vector_list in states_dict['states']]
+            states=[
+                StateVector.from_json(state_vector_list)
+                for state_vector_list in states_dict['states']
+            ]
         )
 
 

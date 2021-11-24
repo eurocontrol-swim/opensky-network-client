@@ -33,12 +33,12 @@ __author__ = 'EUROCONTROL (SWIM)'
 
 setup(
     name='opensky-network-client',
-    version='0.0.6',
+    version='0.0.7',
     description='Opensky Network Client',
     author='EUROCONTROL (SWIM)',
     author_email='',
     packages=find_packages(exclude=['tests']),
-    url='https://bitbucket.org/antavelos-eurocontrol/opensky-network-client',
+    url='https://github.com/eurocontrol-swim/opensky-network-client',
     install_requires=[],
     tests_require=[
         'pytest',
